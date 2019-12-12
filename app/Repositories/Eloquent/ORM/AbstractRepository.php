@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories\Eloquent\ORM;
 
 use App\Repositories\AppRepositoryInterface;
@@ -57,7 +58,7 @@ abstract class AbstractRepository implements AppRepositoryInterface, ModelReposi
      * 
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }    
@@ -93,7 +94,9 @@ abstract class AbstractRepository implements AppRepositoryInterface, ModelReposi
     {
         $record = $this->model->findOrFail($id);
 
-        return $record->update($data);
+        $record->update($data);
+
+        return $record;
     }
     
     /**

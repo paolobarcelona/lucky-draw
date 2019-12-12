@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories\Eloquent\ORM\Interfaces;
 
 use Illuminate\Database\Eloquent\Model;

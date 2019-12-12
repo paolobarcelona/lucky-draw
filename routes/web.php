@@ -18,4 +18,6 @@
 // Route::namespace('Admin')->group(function () {
 //     // Controllers Within The "App\Http\Controllers\Admin" Namespace
 // });
-// Route::get('/', 'LoginController@index');
+Auth::routes();
+
+Route::get('/', 'HomeController@index')->name('home');
