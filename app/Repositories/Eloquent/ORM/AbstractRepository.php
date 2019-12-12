@@ -74,13 +74,23 @@ abstract class AbstractRepository implements AppRepositoryInterface, ModelReposi
 
         return $this;
     }
-     
+
     /**
-     * Show record
+     * Find record.
      * 
-     * @return mixed
+     * @return null|\Illuminate\Database\Eloquent\Model
      */
-    public function show(string $id)
+    public function find(string $id): ?Model
+    {
+        return $this->model->find($id);
+    }    
+
+    /**
+     * Find a record or fail.
+     * 
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function findOrFail(string $id): Model
     {
         return $this->model->findOrFail($id);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Model;
+
 interface AppRepositoryInterface
 {
     /**
@@ -28,9 +30,16 @@ interface AppRepositoryInterface
     /**
      * Show record
      * 
-     * @return mixed
+     * @return null|\Illuminate\Database\Eloquent\Model
      */
-    public function show(string $id);
+    public function find(string $id): ?Model;
+    
+    /**
+     * Show record
+     * 
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function findOrFail(string $id): Model;
 
     /**
      * Update record.
