@@ -13,14 +13,4 @@ final class ModelStub extends Model
      * @var array
      */
     protected $fillable = ['id', 'name'];
-
-    /**
-     * Test relation
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function relations(): Collection
-    {
-        return new Collection();
-    }
 }

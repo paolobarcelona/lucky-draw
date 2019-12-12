@@ -2,9 +2,11 @@
 
 namespace Tests\Unit\Repositories\Eloquent\ORM;
 
+use App\Models\User;
 use App\Repositories\Eloquent\ORM\AbstractRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Mockery\MockInterface;
 use Tests\AbstractTestCase;
 use Tests\Stubs\Models\ModelStub;
@@ -117,11 +119,36 @@ final class AbstractRepositoryTest extends AbstractTestCase
     }    
 
     /**
-     * Should show a record.
+     * Should find a record or fail.
      * 
      * @return void
      */
-    public function testShow(): void
+    public function testFind(): void
+    {
+        $record = new ModelStub(['id' => 9999]);
+
+        /** @var \Illuminate\Database\Eloquent\Model $model */
+        $model = $this->mock(
+            Model::class,
+            static function (MockInterface $mock) use ($record): void {
+                $mock->shouldReceive('find')
+                    ->once()
+                    ->with($record->id)
+                    ->andReturn($record);
+            }
+        );
+        
+        $fetchedStub = $this->getRepositoryStub($model)->find($record->id);
+        
+        self::assertEquals($fetchedStub->id, $record->id);
+    }    
+
+    /**
+     * Should find a record or fail.
+     * 
+     * @return void
+     */
+    public function testFindOrFail(): void
     {
         $record = new ModelStub(['id' => 9999]);
 
@@ -136,7 +163,7 @@ final class AbstractRepositoryTest extends AbstractTestCase
             }
         );
         
-        $fetchedStub = $this->getRepositoryStub($model)->show($record->id);
+        $fetchedStub = $this->getRepositoryStub($model)->findOrFail($record->id);
         
         self::assertEquals($fetchedStub->id, $record->id);
     }
@@ -178,20 +205,20 @@ final class AbstractRepositoryTest extends AbstractTestCase
      */
     public function testWith(): void
     {
-        $relation = 'relations';
+        $relation = 'winningNumbers';
 
         /** @var \Illuminate\Database\Eloquent\Model $model */
         $model = $this->mock(
             Model::class,
-            static function (MockInterface $mock) use ($relation): void {
+            function (MockInterface $mock) use ($relation): void {
                 $mock->shouldReceive('with')
                     ->once()
                     ->with($relation)
-                    ->andReturn(new Collection());
+                    ->andReturn((new User())->winningNumbers());
             }
         );
 
-        $relation = $this->getRepositoryStub($model)->with($relation);
+        self::assertInstanceOf(Relation::class, $this->getRepositoryStub($model)->with($relation));
     }
 
     /**
