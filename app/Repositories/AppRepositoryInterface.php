@@ -1,5 +1,6 @@
 <?php
-namespace App\Repositories\Interfaces;
+
+namespace App\Repositories;
 
 interface AppRepositoryInterface
 {
@@ -36,5 +37,5 @@ interface AppRepositoryInterface
      *
      * @return mixed
      */
-    public function update(array $data, string $id);    
+    public function update(array $data, string $id);
 }
