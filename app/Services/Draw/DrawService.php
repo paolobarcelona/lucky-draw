@@ -79,7 +79,6 @@ final class DrawService implements DrawServiceInterface
             $userIds = [];
 
             foreach ($winningNumbers as $winningNumber) {
-                // may laman na ba, at wala pa sa list? meaning skip na.
                 if (empty($userIds) === false && \in_array($winningNumber->user_id, $userIds) === false) {
                     break;
                 }
@@ -88,17 +87,47 @@ final class DrawService implements DrawServiceInterface
             }
 
             $allWinningNumbers = $this->winningNumberRepository->findByUserIds($userIds);
-            $allNumbers = [];
+            $allNumbers = $winningNumberUserReverse = [];
 
             foreach ($allWinningNumbers as $winningNumber) {
-                $allNumbers[] = (int)$winningNumber->winning_number;
+                $number = (int)$winningNumber->winning_number;
+
+                $allNumbers[] = $number;
+
+                if (isset($winningNumberUserReverse[$winningNumber->winning_number]) === false ) {
+                    $winningNumberUserReverse[$winningNumber->winning_number] = [
+                        'winning_number_id' => (int)$winningNumber->id,
+                        'user_id' => (int)$winningNumber->user_id
+                    ];
+                }
             }
 
             $winningNumberInput = \array_rand($allNumbers, 1);
+
+            // for here, we want to create an attempt and a winner immediately.
+            $drawAttempt = $this->drawAttemptRepository->create([
+                'prize' => $prize,
+                'winning_number' => $winningNumberInput,
+                'is_generated_randomly' => $isGeneratedRandomly
+            ]);
+
+            $winner = $this->winnerRepository->create([
+                'draw_attempt_id' => $drawAttempt->id,
+                'user_id' => $winningNumberUserReverse[$winningNumberInput]['user_id'] ?? null,
+                'winning_number_id' => $winningNumberUserReverse[$winningNumberInput]['winning_number_id'] ?? null
+            ]);
+
+            return $drawAttempt;
         }
 
-        // TODO: throw exception if number already won (for fail safety).
+        /** @var null|\App\Models\DrawAttempt $winningDraw */
+        $winningDraw = $this->drawAttemptRepository->getWinningDrawAttemptByNumber($winningNumberInput);
 
+        if ($winningDraw !== null) {
+            throw new PrizeAlreadyExistsException(\config('exceptions.prize_already_exists_for_number'));
+        }
+
+        // TODO: CHECK IF THERE IS WINNING NUMBER FOR THE WINNING NUMBER INPUT.
         return $this->drawAttemptRepository->create([
             'prize' => $prize,
             'winning_number' => $winningNumberInput,
