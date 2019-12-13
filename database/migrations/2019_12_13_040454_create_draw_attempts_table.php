@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddHasWonToUsers extends Migration
+class CreateDrawAttemptsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddHasWonToUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('has_won')->nullable();
-            $table->boolean('is_admin')->default(0);
+        Schema::create('draw_attempts', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->timestamps();
         });
     }
 
@@ -26,8 +26,6 @@ class AddHasWonToUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->removeColumn('has_won');
-        });
+        Schema::dropIfExists('draw_attempts');
     }
 }

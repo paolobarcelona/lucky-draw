@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent\ORM;
 
 use App\Repositories\AppRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\ModelRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class AbstractRepository implements AppRepositoryInterface, ModelRepositoryInterface
@@ -83,6 +84,24 @@ abstract class AbstractRepository implements AppRepositoryInterface, ModelReposi
     public function find(string $id): ?Model
     {
         return $this->model->find($id);
+    }
+
+    /**
+     * Find records by filters
+     * 
+     * @return null|mixed
+     */
+    public function findBy(array $filters)
+    {
+        if (empty($filters) === true) {
+            return new Collection();
+        }
+
+        foreach ($filters as $field => $value) {
+            $this->model = $this->model->where($field, '=', $value);
+        }
+
+        return $this->model->get();
     }    
 
     /**

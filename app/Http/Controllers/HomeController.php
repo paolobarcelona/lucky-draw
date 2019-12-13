@@ -2,18 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface;
+use App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface;
 
-class HomeController extends Controller
+final class HomeController extends Controller
 {
+    /**
+     * @var \App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface
+     */
+    private $userRepository;
+
+    /**
+     * @var \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface
+     */
+    private $winnerRepository;    
+
     /**
      * Create a new controller instance.
      *
-     * @return void
+     * @param \App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface $userRepository
+     * @param \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface $winnerRepository
      */
-    public function __construct()
-    {
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        WinnerRepositoryInterface $winnerRepository
+    ) {
         $this->middleware('auth');
+        
+        $this->userRepository = $userRepository;
+        $this->winnerRepository = $winnerRepository;
     }
 
     /**
@@ -23,6 +40,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $users = $this->userRepository->getAllNonAdminUsers();
+        $winners = $this->winnerRepository->all();
+
+        return view('home', \compact('users', 'winners'));
     }
 }

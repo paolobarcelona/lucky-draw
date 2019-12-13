@@ -35,7 +35,7 @@ class UserWinningNumberTableSeeder extends Seeder
 
             for ($counter = 0; $counter < $randomNumber; $counter++) {
                 $winningNumberRepo->create([
-                    'number' => $faker->unique()->randomNumber(4),
+                    'number' => $faker->unique()->randomNumber(4, true),
                     'user_id' => $user->id
                 ]);
             }

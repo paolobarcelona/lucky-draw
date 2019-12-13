@@ -14,13 +14,22 @@ class WinningNumber extends Model
      */
     protected $fillable = ['number', 'user_id'];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var mixed[]
+     */
+    protected $casts = [
+        'created_at' => 'datetime'
+    ];
+    
     /** 
-     * Returns the user for this winning number..
+     * Returns the user for this winning number.
      *
      * @return \Illuminate\Database\Eloquent\Relations\Relation
      */
     public function user(): Relation
     {
-        return $this->belongsTo('App\Models\User');
-    }    
+        return $this->belongsTo('App\Models\User', 'user_id');
+    }
 }
