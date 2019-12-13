@@ -12,7 +12,7 @@ class WinningNumber extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['number', 'user_id'];
+    protected $fillable = ['winning_number', 'user_id'];
 
     /**
      * The attributes that should be cast to native types.
@@ -20,7 +20,8 @@ class WinningNumber extends Model
      * @var mixed[]
      */
     protected $casts = [
-        'created_at' => 'datetime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
     
     /** 

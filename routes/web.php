@@ -1,6 +1,5 @@
 <?php
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,10 +11,13 @@
 |
 */
 
-use App\Http\Controllers\WinningNumbersController;
-
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/users/{userId}/winning-numbers', 'UsersController@showWinningNumbers');
+
+Route::group(['prefix' => 'draw'], function () {
+    Route::get('/create', 'DrawsController@index');
+    Route::post('/create', 'DrawsController@store');
+});

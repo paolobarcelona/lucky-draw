@@ -19,7 +19,7 @@
                         <tbody>
                             @foreach ($user->winningNumbers ?? [] as $winningNumber)
                                 <tr>
-                                    <td class="text-center">{{ $winningNumber->number ?? '' }}</td>
+                                    <td class="text-center">{{ $winningNumber->winning_number ?? '' }}</td>
                                     <td class="text-center">{{ Carbon\Carbon::parse($winningNumber->created_at)->format('m/d/Y H:i') }}</td>
                                 </tr>
                             @endforeach

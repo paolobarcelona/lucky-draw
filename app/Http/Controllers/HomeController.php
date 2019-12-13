@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface;
+use Illuminate\Contracts\Support\Renderable;
 
 final class HomeController extends Controller
 {
@@ -38,7 +39,7 @@ final class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(): Renderable
     {
         $users = $this->userRepository->getAllNonAdminUsers();
         $winners = $this->winnerRepository->all();
