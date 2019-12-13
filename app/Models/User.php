@@ -49,4 +49,14 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\WinningNumber');
     }
+
+    /** 
+     * Returns the prize of the user.
+     *
+     * @return null|\Illuminate\Database\Eloquent\Relations\Relation
+     */
+    public function prize(): ?Relation
+    {
+        return $this->hasOne('App\Models\Winner');
+    }    
 }

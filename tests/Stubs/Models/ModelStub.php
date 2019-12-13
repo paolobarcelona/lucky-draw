@@ -12,5 +12,5 @@ final class ModelStub extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'name'];
+    protected $fillable = ['id', 'name', 'description'];
 }

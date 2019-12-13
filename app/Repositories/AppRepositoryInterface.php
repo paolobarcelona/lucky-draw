@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface AppRepositoryInterface
@@ -33,7 +34,14 @@ interface AppRepositoryInterface
      * @return null|\Illuminate\Database\Eloquent\Model
      */
     public function find(string $id): ?Model;
-    
+
+    /**
+     * Find records by filters
+     * 
+     * @return null|mixed
+     */
+    public function findBy(array $filters);    
+
     /**
      * Show record
      * 

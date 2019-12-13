@@ -64,6 +64,11 @@
             "@php artisan migrate",
             "@php artisan create-admin-user",
             "@php artisan db:seed --class=UserWinningNumberTableSeeder"
+        ],
+        "build-frontend": "npm install && npm run dev",
+        "build-project": [
+            "build-frontend",
+            "refresh-and-populate"
         ]
     }
 }

@@ -119,7 +119,7 @@ final class AbstractRepositoryTest extends AbstractTestCase
     }    
 
     /**
-     * Should find a record or fail.
+     * Should find a record.
      * 
      * @return void
      */
@@ -141,6 +141,51 @@ final class AbstractRepositoryTest extends AbstractTestCase
         $fetchedStub = $this->getRepositoryStub($model)->find($record->id);
         
         self::assertEquals($fetchedStub->id, $record->id);
+    }    
+
+    /**
+     * Should find a records by filters.
+     * 
+     * @return void
+     */
+    public function testFindBy(): void
+    {
+        $record1 = new ModelStub(['id' => 9998, 'name' => 'lorem', 'description' => 'ipsum']);
+        $record2 = new ModelStub(['id' => 9999, 'name' => 'lorem', 'description' => 'ipsum']);
+
+        $filters = ['name' => 'lorem', 'description' => 'ipsum'];
+
+        /** @var \Illuminate\Database\Eloquent\Model $model */
+        $model = $this->mock(
+            Model::class,
+            static function (MockInterface $mock) use ($filters, $record1, $record2): void {
+                foreach($filters as $field => $value) {
+                    $mock->shouldReceive('where')
+                    ->once()
+                    ->withArgs(function($param1, $param2, $param3) use ($field, $value): bool {
+                        
+                        self::assertEquals($param1, $field);
+                        self::assertEquals($param2, '=');
+                        self::assertEquals($param3, $value);
+                        
+                        return true;  
+                    })
+                    ->andReturnSelf();
+                }
+
+                $mock->shouldReceive('get')
+                    ->once()
+                    ->withNoArgs()
+                    ->andReturn(new Collection([$record1, $record2]));
+            }
+        );
+        
+        $items = $this->getRepositoryStub($model)->findBy($filters);
+
+        self::assertInstanceOf(Collection::class, $items);
+        self::assertEquals(2, $items->count());
+        self::assertContains($record1->toArray(), $items->toArray());
+        self::assertContains($record2->toArray(), $items->toArray());
     }    
 
     /**

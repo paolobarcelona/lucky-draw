@@ -11356,3 +11356,7 @@ a.text-dark:focus {
   }
 }
 
+.top-buffer {
+  margin-top: 20px;
+}
+

@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,6 +11,11 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use App\Http\Controllers\WinningNumbersController;
+
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
+
+Route::get('/users/{userId}/winning-numbers', 'UsersController@showWinningNumbers');
