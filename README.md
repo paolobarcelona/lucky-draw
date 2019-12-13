@@ -10,7 +10,7 @@ Lucky Draw System is a simple lottery application built with laravel 6
 
 `composer install`
 
-`npm install`
+`composer build-project`
 
 ## Tests
 
