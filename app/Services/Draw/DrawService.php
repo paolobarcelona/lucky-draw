@@ -57,7 +57,7 @@ final class DrawService implements DrawServiceInterface
     {
         $prize = $data['prize'] ?? '';
         $winningNumberInput = $data['winning_number'] ?? null;
-        $isGeneratedRandomly = (bool)($data['is_generated_randomly']) ?? false;
+        $isGeneratedRandomly = (bool)($data['is_generated_randomly'] ?? null);
 
         /** @var null|\App\Models\DrawAttempt $drawAttemptForPrize */
         $drawAttemptForPrize = $this->drawAttemptRepository->getWinningDrawAttemptByPrize($prize);
