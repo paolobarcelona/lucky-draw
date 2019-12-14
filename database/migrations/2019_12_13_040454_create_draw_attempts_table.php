@@ -21,9 +21,6 @@ class CreateDrawAttemptsTable extends Migration
             $table->boolean('is_generated_randomly')->default(false);
             $table->integer('winning_number');
             $table->enum('prize', DrawAttempt::PRIZES);
-
-            $table->unsignedBigInteger('winning_number_id')->nullable();
-            $table->foreign('winning_number_id')->references('id')->on('winning_numbers');             
         });
     }
 

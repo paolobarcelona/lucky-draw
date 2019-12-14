@@ -67,4 +67,37 @@ final class WinningNumberRepositoryTest extends AbstractTestCase
 
         self::assertInstanceOf(Collection::class, $items);
     }
+
+    /**
+     * Should get all winning number by number that does not have a winner.
+     *
+     * @return void
+     */
+    public function testGetWinningNumberWithoutWinnerByNumber(): void
+    {
+        $winningNumber = $this->getFaker()->unique()->randomNumber(4, true);
+
+        /** @var \App\Models\WinningNumber $model */
+        $model = $this->mock(
+            WinningNumber::class,
+            static function (MockInterface $mock) use ($winningNumber): void {
+                $mock->shouldReceive('where')
+                    ->once()
+                    ->with('winning_number', '=', $winningNumber)
+                    ->andReturnSelf();
+                $mock->shouldReceive('has')
+                    ->once()
+                    ->with('winner', '<', '1')
+                    ->andReturnSelf();
+                $mock->shouldReceive('first')
+                    ->once()
+                    ->withNoArgs()
+                    ->andReturnNull();
+            }
+        );
+
+        self::assertNull(
+            (new WinningNumberRepository($model))->getWinningNumberWithoutWinnerByNumber($winningNumber)
+        );
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Eloquent\ORM\Interfaces;
 
+use App\Models\WinningNumber;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 
 interface WinningNumberRepositoryInterface
 {
@@ -17,7 +17,16 @@ interface WinningNumberRepositoryInterface
     /**
      * Get all winning number counts based on user id, descending order.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllCountsGroupedByUserIdDescending(): SupportCollection;
+    public function getAllCountsGroupedByUserIdDescending(): Collection;
+
+    /**
+     * Get a winning number by number that has no winner yet.
+     *
+     * @param int $number
+     *
+     * @return null|\App\Models\WinningNumber
+     */
+    public function getWinningNumberWithoutWinnerByNumber(int $number): ?WinningNumber;
 }

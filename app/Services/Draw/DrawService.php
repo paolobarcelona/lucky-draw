@@ -120,18 +120,27 @@ final class DrawService implements DrawServiceInterface
             return $drawAttempt;
         }
 
-        /** @var null|\App\Models\DrawAttempt $winningDraw */
-        $winningDraw = $this->drawAttemptRepository->getWinningDrawAttemptByNumber($winningNumberInput);
+        /** @var null|\App\Models\WinningNumber $numberWithoutWinner */
+        $numberWithoutWinner = $this->winningNumberRepository
+            ->getWinningNumberWithoutWinnerByNumber($winningNumberInput);
 
-        if ($winningDraw !== null) {
+        if ($numberWithoutWinner !== null) {
             throw new PrizeAlreadyExistsException(\config('exceptions.prize_already_exists_for_number'));
         }
 
         // TODO: CHECK IF THERE IS WINNING NUMBER FOR THE WINNING NUMBER INPUT.
-        return $this->drawAttemptRepository->create([
+        $draw = $this->drawAttemptRepository->create([
             'prize' => $prize,
             'winning_number' => $winningNumberInput,
             'is_generated_randomly' => $isGeneratedRandomly
         ]);
+
+        $winner = $this->winnerRepository->create([
+            'draw_attempt_id' => $draw->id,
+            'user_id' => $numberWithoutWinner->user()->id ?? null,
+            'winning_number_id' => $numberWithoutWinner->id ?? null
+        ]);
+
+        return $draw;
     }
 }

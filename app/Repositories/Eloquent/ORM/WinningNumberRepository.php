@@ -5,7 +5,6 @@ namespace App\Repositories\Eloquent\ORM;
 use App\Models\WinningNumber;
 use App\Repositories\Eloquent\ORM\Interfaces\WinningNumberRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
 
 final class WinningNumberRepository extends AbstractRepository implements WinningNumberRepositoryInterface
@@ -44,9 +43,9 @@ final class WinningNumberRepository extends AbstractRepository implements Winnin
     /**
      * Get all winning number counts based on user id, descending order.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllCountsGroupedByUserIdDescending(): SupportCollection
+    public function getAllCountsGroupedByUserIdDescending(): Collection
     {
         $records = $this->model
             ->select('user_id', DB::raw('count(*) as total'))
@@ -55,5 +54,23 @@ final class WinningNumberRepository extends AbstractRepository implements Winnin
             ->get();
 
         return $records;
+    }
+
+    /**
+     * Get a winning number by number that has no winner yet.
+     *
+     * @param int $number
+     *
+     * @return null|\App\Models\WinningNumber
+     */
+    public function getWinningNumberWithoutWinnerByNumber(int $number): ?WinningNumber
+    {
+        /** @var null|\App\Models\WinningNumber $winningNumber */
+        $winningNumber = $this->model
+            ->where('winning_number', '=', $number)
+            ->has('winner', '<', '1')
+            ->first() ?? null;
+
+        return $winningNumber;
     }
 }

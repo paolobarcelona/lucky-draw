@@ -23,8 +23,8 @@ class WinningNumber extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
-    
-    /** 
+
+    /**
      * Returns the user for this winning number.
      *
      * @return \Illuminate\Database\Eloquent\Relations\Relation
@@ -32,5 +32,15 @@ class WinningNumber extends Model
     public function user(): Relation
     {
         return $this->belongsTo('App\Models\User', 'user_id');
+    }
+
+    /**
+     * Returns the winner for this winning number.
+     *
+     * @return null|\Illuminate\Database\Eloquent\Relations\Relation
+     */
+    public function winner(): ?Relation
+    {
+        return $this->has('App\Models\Winner');
     }
 }

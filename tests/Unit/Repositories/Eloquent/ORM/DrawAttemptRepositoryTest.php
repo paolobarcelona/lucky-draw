@@ -45,38 +45,4 @@ final class DrawAttemptRepositoryTest extends AbstractTestCase
             (new DrawAttemptRepository($model))->getWinningDrawAttemptByPrize($prize)
         );
     }
-
-    /**
-     * Should get all winning draw attempt by number.
-     *
-     * @return void
-     */
-    public function testGetWinningDrawAttemptByNumber(): void
-    {
-        $winningNumber = $this->getFaker()->unique()->randomNumber(4, true);
-
-        /** @var \App\Models\DrawAttempt $model */
-        $model = $this->mock(
-            DrawAttempt::class,
-            static function (MockInterface $mock) use ($winningNumber): void {
-                $mock->shouldReceive('where')
-                    ->once()
-                    ->with('winning_number', '=', $winningNumber)
-                    ->andReturnSelf();
-                $mock->shouldReceive('has')
-                    ->once()
-                    ->with('winner')
-                    ->andReturnSelf();
-                $mock->shouldReceive('first')
-                    ->once()
-                    ->withNoArgs()
-                    ->andReturn(new DrawAttempt());
-            }
-        );
-
-        self::assertInstanceOf(
-            DrawAttempt::class,
-            (new DrawAttemptRepository($model))->getWinningDrawAttemptByNumber($winningNumber)
-        );
-    }
 }
