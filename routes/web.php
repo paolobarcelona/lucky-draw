@@ -18,6 +18,6 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::get('/users/{userId}/winning-numbers', 'UsersController@showWinningNumbers');
 
 Route::group(['prefix' => 'draw'], function () {
-    Route::get('/create', 'DrawsController@index');
-    Route::post('/create', 'DrawsController@store');
+    Route::get('/create', 'DrawsController@index')->name('draw-view');
+    Route::post('/create', 'DrawsController@store')->name('draw-store');
 });

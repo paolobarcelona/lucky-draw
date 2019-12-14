@@ -2,8 +2,6 @@
 
 namespace App\Services\Draw;
 
-use App\Models\DrawAttempt;
-
 interface DrawServiceInterface
 {
     /**
@@ -11,7 +9,7 @@ interface DrawServiceInterface
      *
      * @param mixed[] $data
      *
-     * @return \App\Models\DrawAttempt
+     * @return \App\Services\Draw\DrawResponse
      */
-    public function createDrawAttempt(array $data): DrawAttempt;
+    public function createDrawAttempt(array $data): DrawResponse;
 }

@@ -7,6 +7,7 @@ use App\Models\DrawAttempt;
 use App\Repositories\Eloquent\ORM\Interfaces\DrawAttemptRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\WinningNumberRepositoryInterface;
+use App\Exceptions\NoWinningNumbersFoundException;
 
 final class DrawService implements DrawServiceInterface
 {
@@ -47,15 +48,16 @@ final class DrawService implements DrawServiceInterface
      *
      * @param mixed[] $data
      *
-     * @return \App\Models\DrawAttempt
+     * @return \App\Services\Draw\DrawResponse
      *
+     * @throws \App\Exceptions\NoWinningNumbersFoundException
      * @throws \App\Exceptions\PrizeAlreadyExistsException
      */
-    public function createDrawAttempt(array $data): DrawAttempt
+    public function createDrawAttempt(array $data): DrawResponse
     {
         $prize = $data['prize'] ?? '';
         $winningNumberInput = $data['winning_number'] ?? null;
-        $isGeneratedRandomly = $data['is_generated_randomly'] ?? null;
+        $isGeneratedRandomly = $data['is_generated_randomly'] ?? false;
 
         /** @var null|\App\Models\DrawAttempt $drawAttemptForPrize */
         $drawAttemptForPrize = $this->drawAttemptRepository->getWinningDrawAttemptByPrize($prize);
@@ -93,6 +95,10 @@ final class DrawService implements DrawServiceInterface
                 }
             }
 
+            if (empty($allNumbers) === true) {
+                throw new NoWinningNumbersFoundException(\config('exceptions.no_winning_numbers_found'));
+            }
+
             $winningNumberInput = \array_rand($allNumbers, 1);
 
             // for here, we want to create an attempt and a winner immediately.
@@ -108,7 +114,27 @@ final class DrawService implements DrawServiceInterface
                 'winning_number_id' => $winningNumberUserReverse[$winningNumberInput]['winning_number_id'] ?? null
             ]);
 
-            return $drawAttempt;
+            return new DrawResponse(
+                $drawAttempt,
+                $winner->user()->first() ?? null,
+                $winner
+            );
+        }
+
+        // TODO: CHECK IF THERE IS WINNING NUMBER FOR THE WINNING NUMBER INPUT.
+        $draw = $this->drawAttemptRepository->create([
+            'prize' => $prize,
+            'winning_number' => $winningNumberInput,
+            'is_generated_randomly' => $isGeneratedRandomly
+        ]);
+
+        /** @var null|\App\Models\WinningNumber $winningNumberFromNumber */
+        $winningNumberFromNumber = $this->winningNumberRepository->findBy([
+            'winning_number' => $winningNumberInput
+        ]);
+
+        if ($winningNumberFromNumber->count() === 0) {
+            return new DrawResponse($draw);
         }
 
         /** @var null|\App\Models\WinningNumber $numberWithoutWinner */
@@ -120,19 +146,28 @@ final class DrawService implements DrawServiceInterface
             throw new PrizeAlreadyExistsException(\config('exceptions.prize_already_exists_for_number'));
         }
 
-        // TODO: CHECK IF THERE IS WINNING NUMBER FOR THE WINNING NUMBER INPUT.
-        $draw = $this->drawAttemptRepository->create([
-            'prize' => $prize,
-            'winning_number' => $winningNumberInput,
-            'is_generated_randomly' => $isGeneratedRandomly
+        $userId = $numberWithoutWinner->user()->first()->id ?? null;
+
+        /** @var null|\App\Models\Winner $winnerByUser */
+        $winnerByUser = $this->winnerRepository->findBy([
+            'user_id' => $userId
         ]);
+
+        if ($winnerByUser->count() !== 0) {
+            throw new PrizeAlreadyExistsException(
+                \sprintf(
+                    \config('exceptions.prize_already_exists_for_name'),
+                    $numberWithoutWinner->user()->first()->name
+                )
+            );
+        }
 
         $winner = $this->winnerRepository->create([
             'draw_attempt_id' => $draw->id ?? null,
-            'user_id' => $numberWithoutWinner->user()->id ?? null,
+            'user_id' => $userId,
             'winning_number_id' => $numberWithoutWinner->id ?? null
         ]);
 
-        return $draw;
+        return new DrawResponse($draw, $winner->user()->first(), $winner);
     }
 }

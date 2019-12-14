@@ -1,6 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
+
+@if (session()->has('message'))
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                @if (session()->get('error'))
+                    <div class="alert alert-danger">
+                        {{ session()->get('message') }}
+                    </div>
+                @else
+                    <div class="alert alert-success">
+                        {{ session()->get('message') }}
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">

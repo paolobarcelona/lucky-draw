@@ -12,6 +12,7 @@
                         <thead>
                             <tr>
                                 <th class="text-center">Name</th>
+                                <th class="text-center">Number</th>
                                 <th class="text-center">Prize</th>
                             </tr>
                         </thead>
@@ -20,7 +21,8 @@
                             @foreach ($winners as $winners)
                                 <tr>
                                     <td class="text-center">{{ $winners->user->name ?? '' }}</td>
-                                    <td class="text-center">{{ $user->prize ?? '' }}</td>
+                                    <td class="text-center">{{ $winners->drawAttempt->winning_number ?? '' }}</td>
+                                    <td class="text-center">{{ $prizesReadable[$winners->drawAttempt->prize] ?? '' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

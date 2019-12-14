@@ -14,7 +14,7 @@ class Winner extends Model
      */
     protected $fillable = ['draw_attempt_id', 'user_id', 'winning_number_id'];
 
-    /** 
+    /**
      * Returns the user for this winner.
      *
      * @return \Illuminate\Database\Eloquent\Relations\Relation
@@ -24,7 +24,7 @@ class Winner extends Model
         return $this->belongsTo('App\Models\User', 'user_id');
     }
 
-    /** 
+    /**
      * Returns the draw attempt for this winner.
      *
      * @return \Illuminate\Database\Eloquent\Relations\Relation
@@ -32,5 +32,15 @@ class Winner extends Model
     public function drawAttempt(): Relation
     {
         return $this->belongsTo('App\Models\DrawAttempt', 'draw_attempt_id');
+    }
+
+    /**
+     * Returns the winning number for this winner.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     */
+    public function winningNumber(): Relation
+    {
+        return $this->belongsTo('App\Models\WinningNumber', 'winning_number_ids');
     }
 }

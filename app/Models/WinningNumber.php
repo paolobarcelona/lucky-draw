@@ -41,6 +41,6 @@ class WinningNumber extends Model
      */
     public function winner(): ?Relation
     {
-        return $this->has('App\Models\Winner');
+        return $this->hasOne('App\Models\Winner');
     }
 }
