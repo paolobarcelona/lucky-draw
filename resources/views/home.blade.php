@@ -11,16 +11,18 @@
                     <table id="user-table" class="table table-dark">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Prize</th>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">Number</th>
+                                <th class="text-center">Prize</th>
                             </tr>
                         </thead>
                         <tbody>
 
                             @foreach ($winners as $winners)
                                 <tr>
-                                    <td>{{ $winners->user->name ?? '' }}</td>
-                                    <td>{{ $user->prize ?? '' }}</td>
+                                    <td class="text-center">{{ $winners->user->name ?? '' }}</td>
+                                    <td class="text-center">{{ $winners->drawAttempt->winning_number ?? '' }}</td>
+                                    <td class="text-center">{{ $prizesReadable[$winners->drawAttempt->prize] ?? '' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

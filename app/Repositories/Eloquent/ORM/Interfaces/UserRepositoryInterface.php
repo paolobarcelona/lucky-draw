@@ -8,7 +8,7 @@ interface UserRepositoryInterface
 {
     /**
      * Get all non admin users.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllNonAdminUsers(): Collection;

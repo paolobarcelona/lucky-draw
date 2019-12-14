@@ -12,7 +12,7 @@ class WinningNumber extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['number', 'user_id'];
+    protected $fillable = ['winning_number', 'user_id'];
 
     /**
      * The attributes that should be cast to native types.
@@ -20,10 +20,11 @@ class WinningNumber extends Model
      * @var mixed[]
      */
     protected $casts = [
-        'created_at' => 'datetime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
-    
-    /** 
+
+    /**
      * Returns the user for this winning number.
      *
      * @return \Illuminate\Database\Eloquent\Relations\Relation
@@ -31,5 +32,15 @@ class WinningNumber extends Model
     public function user(): Relation
     {
         return $this->belongsTo('App\Models\User', 'user_id');
+    }
+
+    /**
+     * Returns the winner for this winning number.
+     *
+     * @return null|\Illuminate\Database\Eloquent\Relations\Relation
+     */
+    public function winner(): ?Relation
+    {
+        return $this->hasOne('App\Models\Winner');
     }
 }

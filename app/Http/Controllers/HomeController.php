@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DrawAttempt;
 use App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface;
+use App\Services\Draw\DrawResponse;
+use Illuminate\Contracts\Support\Renderable;
 
 final class HomeController extends Controller
 {
@@ -15,7 +18,7 @@ final class HomeController extends Controller
     /**
      * @var \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface
      */
-    private $winnerRepository;    
+    private $winnerRepository;
 
     /**
      * Create a new controller instance.
@@ -28,7 +31,7 @@ final class HomeController extends Controller
         WinnerRepositoryInterface $winnerRepository
     ) {
         $this->middleware('auth');
-        
+
         $this->userRepository = $userRepository;
         $this->winnerRepository = $winnerRepository;
     }
@@ -38,11 +41,12 @@ final class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(): Renderable
     {
         $users = $this->userRepository->getAllNonAdminUsers();
         $winners = $this->winnerRepository->all();
+        $prizesReadable = DrawAttempt::PRIZES_READABLE;
 
-        return view('home', \compact('users', 'winners'));
+        return view('home', \compact('users', 'winners', 'prizesReadable'));
     }
 }

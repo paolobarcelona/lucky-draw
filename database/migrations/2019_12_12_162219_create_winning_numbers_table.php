@@ -16,10 +16,10 @@ class CreateWinningNumbersTable extends Migration
         Schema::create('winning_numbers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->integer('number');
+            $table->integer('winning_number');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unique(['number', 'user_id'], 'unique_number_user_id');
+            $table->unique(['winning_number', 'user_id'], 'unique_winning_number_user_id');
         });
     }
 

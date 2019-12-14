@@ -17,16 +17,20 @@ class CreateWinnersTable extends Migration
         Schema::create('winners', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->integer('number');
-            $table->enum('prize', Winner::PRIZES);
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->unsignedBigInteger('winning_number_id')->nullable();
-            $table->foreign('winning_number_id')->references('id')->on('winning_numbers');            
+            $table->unsignedBigInteger('draw_attempt_id');
+            $table->foreign('draw_attempt_id')->references('id')->on('draw_attempts');
 
-            $table->unique(['number', 'prize', 'user_id'], 'unique_number_prize_user_id');
+            $table->unsignedBigInteger('winning_number_id')->nullable();
+            $table->foreign('winning_number_id')->references('id')->on('winning_numbers');
+
+            $table->unique(
+                ['user_id', 'draw_attempt_id'],
+                'unique_user_id_draw_attempt_id'
+            );
         });
     }
 

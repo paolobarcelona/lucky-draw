@@ -1,43 +1,44 @@
-<p align="center">Lucky Draw System</p>
-
 ## Lucky Draw System
 
-Lucky Draw System is a simple lottery application built with laravel 6
+### Lucky Draw System is a simple lottery application built with laravel 6
 
-## Setting up
-
--Run the following commands:
+### Setting up
 
 `composer install`
 
-`npm install`
+`composer build-project`
 
-## Tests
-
--Run the command:
+### Tests
 
 `composer run-tests`
 
-## Seeding
+### Seeding
 
-- To run a full cycle of migration, create-admin-user command, and seeding, simply run:
+#### To run a full cycle of migration, create-admin-user command, and seeding, simply run:
 
-`refresh-and-populate`
+`composer refresh-and-seed`
 
-This will run the following:
+#### This will run the following:
 
--- To refresh the db:
+#### To refresh the db:
 
 `php artisan migrate:reset`
 
--- To run migration:
+#### To run migration:
 
 `php artisan migrate`
 
--- To create the admin user for site access run:
+#### To create the admin user for site access run:
 
 `php artisan create-admin-user`
 
--- To perform user seeding
+#### To perform user seeding
 
 `php artisan db:seed --class=UserWinningNumberTableSeeder`
+
+
+### Admin credentials
+
+`username: admin@lucky.draw`
+
+`password: password`

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface;
+use Illuminate\Contracts\Support\Renderable;
 
 final class UsersController extends Controller
 {
@@ -28,7 +29,7 @@ final class UsersController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function showWinningNumbers(string $userId)
+    public function showWinningNumbers(string $userId): Renderable
     {
         $user = $this->userRepository->findOrFail($userId);
 

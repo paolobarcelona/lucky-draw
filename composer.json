@@ -59,7 +59,7 @@
             "@php artisan key:generate --ansi"
         ],
         "run-tests": ".\\vendor\\bin\\phpunit",
-        "refresh-and-populate": [
+        "refresh-and-seed": [
             "@php artisan migrate:reset",
             "@php artisan migrate",
             "@php artisan create-admin-user",
