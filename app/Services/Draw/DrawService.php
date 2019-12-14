@@ -5,7 +5,6 @@ namespace App\Services\Draw;
 use App\Exceptions\PrizeAlreadyExistsException;
 use App\Models\DrawAttempt;
 use App\Repositories\Eloquent\ORM\Interfaces\DrawAttemptRepositoryInterface;
-use App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface;
 use App\Repositories\Eloquent\ORM\Interfaces\WinningNumberRepositoryInterface;
 
@@ -15,11 +14,6 @@ final class DrawService implements DrawServiceInterface
      * @var \App\Repositories\Eloquent\ORM\Interfaces\DrawAttemptRepositoryInterface
      */
     private $drawAttemptRepository;
-
-    /**
-     * @var \App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface
-     */
-    private $userRepository;
 
     /**
      * @var \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface
@@ -35,18 +29,15 @@ final class DrawService implements DrawServiceInterface
      * DrawService constructor.
      *
      * @param \App\Repositories\Eloquent\ORM\Interfaces\DrawAttemptRepositoryInterface $drawAttemptRepository
-     * @param \App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface $userAttemptRepository
      * @param \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface $winnerRepository
      * @param \App\Repositories\Eloquent\ORM\Interfaces\WinningNumberRepositoryInterface $winningNumberRepository
      */
     public function __construct(
         DrawAttemptRepositoryInterface $drawAttemptRepository,
-        UserRepositoryInterface $userRepository,
         WinnerRepositoryInterface $winnerRepository,
         WinningNumberRepositoryInterface $winningNumberRepository
     ) {
         $this->drawAttemptRepository = $drawAttemptRepository;
-        $this->userRepository = $userRepository;
         $this->winnerRepository = $winnerRepository;
         $this->winningNumberRepository = $winningNumberRepository;
     }
@@ -62,9 +53,9 @@ final class DrawService implements DrawServiceInterface
      */
     public function createDrawAttempt(array $data): DrawAttempt
     {
-        $prize = (string)$data['prize'];
+        $prize = $data['prize'] ?? '';
         $winningNumberInput = $data['winning_number'] ?? null;
-        $isGeneratedRandomly = (bool)$data['is_generated_randomly'];
+        $isGeneratedRandomly = $data['is_generated_randomly'] ?? null;
 
         /** @var null|\App\Models\DrawAttempt $drawAttemptForPrize */
         $drawAttemptForPrize = $this->drawAttemptRepository->getWinningDrawAttemptByPrize($prize);
@@ -124,7 +115,8 @@ final class DrawService implements DrawServiceInterface
         $numberWithoutWinner = $this->winningNumberRepository
             ->getWinningNumberWithoutWinnerByNumber($winningNumberInput);
 
-        if ($numberWithoutWinner !== null) {
+        // If this is null, it means that there is already a winner for this number.
+        if ($numberWithoutWinner === null) {
             throw new PrizeAlreadyExistsException(\config('exceptions.prize_already_exists_for_number'));
         }
 
@@ -136,7 +128,7 @@ final class DrawService implements DrawServiceInterface
         ]);
 
         $winner = $this->winnerRepository->create([
-            'draw_attempt_id' => $draw->id,
+            'draw_attempt_id' => $draw->id ?? null,
             'user_id' => $numberWithoutWinner->user()->id ?? null,
             'winning_number_id' => $numberWithoutWinner->id ?? null
         ]);
