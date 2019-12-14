@@ -57,7 +57,7 @@ final class DrawService implements DrawServiceInterface
     {
         $prize = $data['prize'] ?? '';
         $winningNumberInput = $data['winning_number'] ?? null;
-        $isGeneratedRandomly = $data['is_generated_randomly'] ?? false;
+        $isGeneratedRandomly = (bool)($data['is_generated_randomly']) ?? false;
 
         /** @var null|\App\Models\DrawAttempt $drawAttemptForPrize */
         $drawAttemptForPrize = $this->drawAttemptRepository->getWinningDrawAttemptByPrize($prize);
@@ -67,6 +67,7 @@ final class DrawService implements DrawServiceInterface
         }
 
         if ($isGeneratedRandomly === true) {
+
             $winningNumbers = $this->winningNumberRepository->getAllCountsGroupedByUserIdDescending();
 
             $userIds = [];
@@ -80,6 +81,7 @@ final class DrawService implements DrawServiceInterface
             }
 
             $allWinningNumbers = $this->winningNumberRepository->findByUserIds($userIds);
+
             $allNumbers = $winningNumberUserReverse = [];
 
             foreach ($allWinningNumbers as $winningNumber) {
@@ -87,19 +89,18 @@ final class DrawService implements DrawServiceInterface
 
                 $allNumbers[] = $number;
 
-                if (isset($winningNumberUserReverse[$winningNumber->winning_number]) === false ) {
-                    $winningNumberUserReverse[$winningNumber->winning_number] = [
-                        'winning_number_id' => (int)$winningNumber->id,
-                        'user_id' => (int)$winningNumber->user_id
-                    ];
-                }
+                $winningNumberUserReverse[$winningNumber->winning_number] = [
+                    'winning_number_id' => (int)$winningNumber->id,
+                    'user_id' => (int)$winningNumber->user_id
+                ];
             }
 
             if (empty($allNumbers) === true) {
                 throw new NoWinningNumbersFoundException(\config('exceptions.no_winning_numbers_found'));
             }
 
-            $winningNumberInput = \array_rand($allNumbers, 1);
+            $randomKey = \array_rand($allNumbers);
+            $winningNumberInput = $allNumbers[$randomKey];
 
             // for here, we want to create an attempt and a winner immediately.
             $drawAttempt = $this->drawAttemptRepository->create([

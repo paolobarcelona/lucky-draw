@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DrawAttempt;
 use App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface;
+use App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface;
 use App\Services\Draw\DrawServiceInterface;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
@@ -23,19 +24,27 @@ final class DrawsController extends Controller
     private $userRepository;
 
     /**
+     * @var \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface
+     */
+    private $winnerRepository;
+
+    /**
      * Create a new controller instance.
      *
      * @param \App\Services\Draw\DrawServiceInterface $drawService
      * @param \App\Repositories\Eloquent\ORM\Interfaces\UserRepositoryInterface $userRepository
+     * @param \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface $winnerRepository
      */
     public function __construct(
         DrawServiceInterface $drawService,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        WinnerRepositoryInterface $winnerRepository
     ) {
         $this->middleware('auth');
 
         $this->drawService = $drawService;
         $this->userRepository = $userRepository;
+        $this->winnerRepository = $winnerRepository;
     }
 
     /**
@@ -45,7 +54,15 @@ final class DrawsController extends Controller
      */
     public function index(): Renderable
     {
-        return view('create_draw', ['prizes' => DrawAttempt::PRIZES_READABLE]);
+        $winners = $this->winnerRepository->all();
+
+        $prizes = DrawAttempt::PRIZES_READABLE;
+
+        foreach ($winners as $winner) {
+            unset($prizes[$winner->drawAttempt()->first()->prize]);
+        }
+
+        return view('create_draw', ['prizes' => $prizes]);
     }
 
     /**
@@ -62,8 +79,8 @@ final class DrawsController extends Controller
     {
         $validatedData = $request->validate([
             'prize' => \sprintf('required|string|max:255|in:%s', \implode(',', DrawAttempt::PRIZES)),
-            'winning_number' => 'required_unless:is_generated_randomly,true|numeric',
-            'is_generated_randomly' => 'nullable|boolean'
+            'is_generated_randomly' => 'nullable|boolean',
+            'winning_number' => 'required_if:is_generated_randomly,false|numeric'
         ]);
 
         $draw = null;

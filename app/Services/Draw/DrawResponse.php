@@ -9,7 +9,7 @@ use App\Models\Winner;
 final class DrawResponse
 {
     /**
-     * @var \App\Models\DrawAttempt
+     * @var null|\App\Models\DrawAttempt
      */
 
     private $drawAttempt;
@@ -26,12 +26,12 @@ final class DrawResponse
     /**
      * DrawResponse Controller.
      *
-     * @param \App\Models\DrawAttempt $drawAttempt
-     * @param \App\Models\User $user
-     * @param \App\Models\Winner $winner
+     * @param null|\App\Models\DrawAttempt $drawAttempt
+     * @param null|\App\Models\User $user
+     * @param null|\App\Models\Winner $winner
      */
     public function __construct(
-        DrawAttempt $drawAttempt,
+        ?DrawAttempt $drawAttempt = null,
         ?User $user = null,
         ?Winner $winner = null
     ) {
@@ -41,9 +41,9 @@ final class DrawResponse
     }
 
     /**
-     * @return \App\Models\DrawAttempt
+     * @return null|\App\Models\DrawAttempt
      */
-    public function getDrawAttempt(): DrawAttempt
+    public function getDrawAttempt(): ?DrawAttempt
     {
         return $this->drawAttempt;
     }
