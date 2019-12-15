@@ -8,6 +8,10 @@
 
 `composer build-project`
 
+### To Fully build the project and install with npm and call seeder:
+
+`composer build-project`
+
 ### Tests
 
 `composer run-tests`
