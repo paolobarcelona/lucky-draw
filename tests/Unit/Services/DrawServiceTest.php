@@ -153,6 +153,89 @@ final class DrawServiceTest extends AbstractTestCase
                         return true;
                     })
                     ->andReturn(new Winner());
+
+                $mock->shouldReceive('findBy')
+                    ->once()
+                    ->withArgs(function ($data): bool {
+                        self::assertArrayHasKey('user_id', $data);
+
+                        return true;
+                    })
+                    ->andReturn(new Collection());
+            }
+        );
+
+        /** @var \App\Repositories\Eloquent\ORM\Interfaces\WinningNumberRepositoryInterface $winningNumberRepository */
+        $winningNumberRepository = $this->mock(
+            WinningNumberRepositoryInterface::class,
+            static function (MockInterface $mock) use ($payload): void {
+                $mock->shouldReceive('getWinningNumberWithoutWinnerByNumber')
+                    ->once()
+                    ->with((int)$payload['winning_number'])
+                    ->andReturn(new WinningNumber());
+                $mock->shouldReceive('findBy')
+                    ->once()
+                    ->with(['winning_number' => $payload['winning_number']])
+                    ->andReturn(new Collection([new WinningNumber(), new WinningNumber()]));
+            }
+        );
+
+        $drawResponse =  (new DrawService(
+            $drawAttemptRepo,
+            $winnerRepository,
+            $winningNumberRepository
+        ))->createDrawAttempt($payload);
+
+        $createdDraw = $drawResponse->getDrawAttempt();
+
+        self::assertInstanceOf(DrawResponse::class, $drawResponse);
+        self::assertEquals($payload['is_generated_randomly'], $createdDraw->is_generated_randomly ?? null);
+        self::assertEquals($payload['winning_number'], $createdDraw->winning_number ?? null);
+        self::assertEquals($payload['prize'], $createdDraw->prize ?? null);
+    }
+
+    /**
+     * Should throw PrizeAlreadyExistsException if a prize is found by the user
+     *
+     * @return void
+     */
+    public function testCreateDrawAttemptThrowExceptionWithPrizeExistsForName(): void
+    {
+        $this->expectException(PrizeAlreadyExistsException::class);
+
+        $payload = [
+            'is_generated_randomly' => false,
+            'prize' => DrawAttempt::GRAND_PRIZE,
+            'winning_number' => $this->getFaker()->unique()->randomNumber(4, true)
+        ];
+
+        /** @var \App\Repositories\Eloquent\ORM\Interfaces\DrawAttemptRepositoryInterface $drawAttemptRepo */
+        $drawAttemptRepo = $this->mock(
+            DrawAttemptRepositoryInterface::class,
+            static function (MockInterface $mock) use ($payload): void {
+                $mock->shouldReceive('getWinningDrawAttemptByPrize')
+                    ->once()
+                    ->with((string)$payload['prize'])
+                    ->andReturnNull();
+                $mock->shouldReceive('create')
+                    ->once()
+                    ->with($payload)
+                    ->andReturn(new DrawAttempt($payload));
+            }
+        );
+
+        /** @var \App\Repositories\Eloquent\ORM\Interfaces\WinnerRepositoryInterface $winnerRepository */
+        $winnerRepository = $this->mock(
+            WinnerRepositoryInterface::class,
+            function (MockInterface $mock): void {
+                $mock->shouldReceive('findBy')
+                    ->once()
+                    ->withArgs(function ($data): bool {
+                        self::assertArrayHasKey('user_id', $data);
+
+                        return true;
+                    })
+                    ->andReturn(new Collection([new Winner()]));
             }
         );
 
@@ -264,7 +347,7 @@ final class DrawServiceTest extends AbstractTestCase
         ))->createDrawAttempt($payload);
 
         $createdDraw = $drawResponse->getDrawAttempt();
-        
+
         self::assertEquals($payload['is_generated_randomly'], $createdDraw->is_generated_randomly ?? null);
         self::assertEquals($payload['winning_number'], $createdDraw->winning_number ?? null);
         self::assertEquals($payload['prize'], $createdDraw->prize ?? null);

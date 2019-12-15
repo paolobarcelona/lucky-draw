@@ -147,7 +147,10 @@ final class DrawService implements DrawServiceInterface
             throw new PrizeAlreadyExistsException(\config('exceptions.prize_already_exists_for_number'));
         }
 
-        $userId = $numberWithoutWinner->user()->first()->id ?? null;
+        $user = $numberWithoutWinner->user()->first();
+
+        $userId = $user->id ?? null;
+        $userName = $user->name ?? null;
 
         /** @var null|\App\Models\Winner $winnerByUser */
         $winnerByUser = $this->winnerRepository->findBy([
@@ -158,7 +161,7 @@ final class DrawService implements DrawServiceInterface
             throw new PrizeAlreadyExistsException(
                 \sprintf(
                     \config('exceptions.prize_already_exists_for_name'),
-                    $numberWithoutWinner->user()->first()->name
+                    $userName
                 )
             );
         }
